@@ -98,7 +98,7 @@ def run_bot():
                         prediction = ai_model.predict(latest_data[feature_cols])[0]
                         
                         # Ambil probabilitas untuk kelas yang diprediksi
-                        confidence = probs[prediction]
+                        confidence = probs[int(prediction)]
                         threshold = getattr(config, 'CONFIDENCE_THRESHOLD', 0.8)
                         
                         if prediction == 0 or confidence < threshold:
