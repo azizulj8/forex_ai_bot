@@ -87,25 +87,33 @@ def execute_trade_signal(symbol, signal_is_buy, sl_pips=20):
     
     symbol_info = mt5.symbol_info(symbol)
     point = symbol_info.point
+    digits = symbol_info.digits
     
     tick = mt5.symbol_info_tick(symbol)
     
-    # 20 pips SL = 200 points
-    sl_points = sl_pips * 10 * point 
+    # Cek minimum batasan jarak SL dari broker
+    min_stop_points = symbol_info.trade_stops_level
     
-    # TP = SL * 2 (Sesuai rasio 1:2 yang diminta User)
-    tp_pips = sl_pips * config.RISK_REWARD_RATIO
-    tp_points = tp_pips * 10 * point
+    # Konversi pips ke points
+    sl_points = sl_pips * 10
+    
+    # Jika SL kita terlalu sempit untuk aturan broker, paksa perlebar ke batas minimum broker
+    if sl_points < min_stop_points:
+        sl_points = min_stop_points
+        print(f"Perhatian: Jarak SL terlalu kecil untuk broker ini. Diperlebar otomatis ke {sl_points} points.")
+        
+    sl_price_distance = sl_points * point 
+    tp_price_distance = sl_points * config.RISK_REWARD_RATIO * point
 
     if signal_is_buy:
         current_price = tick.ask
-        sl_price = current_price - sl_points
-        tp_price = current_price + tp_points
-        print(f"Sinyal BUY Tereksekusi! Harga: {current_price:.5f} | SL: {sl_price:.5f} | TP: {tp_price:.5f}")
+        sl_price = round(current_price - sl_price_distance, digits)
+        tp_price = round(current_price + tp_price_distance, digits)
+        print(f"Sinyal BUY Tereksekusi! Harga: {current_price} | SL: {sl_price} | TP: {tp_price}")
         return send_order(symbol, mt5.ORDER_TYPE_BUY, lot_size, sl_price, tp_price)
     else:
         current_price = tick.bid
-        sl_price = current_price + sl_points
-        tp_price = current_price - tp_points
-        print(f"Sinyal SELL Tereksekusi! Harga: {current_price:.5f} | SL: {sl_price:.5f} | TP: {tp_price:.5f}")
+        sl_price = round(current_price + sl_price_distance, digits)
+        tp_price = round(current_price - tp_price_distance, digits)
+        print(f"Sinyal SELL Tereksekusi! Harga: {current_price} | SL: {sl_price} | TP: {tp_price}")
         return send_order(symbol, mt5.ORDER_TYPE_SELL, lot_size, sl_price, tp_price)
