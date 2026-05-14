@@ -96,7 +96,15 @@ def execute_trade_signal(symbol, signal_is_buy, sl_pips=20):
     spread_price = tick.ask - tick.bid
     
     # 2. Konversi pips permintaan user ke jarak harga aktual
-    sl_points = sl_pips * 10
+    # Konversi otomatis untuk Gold (XAU), JPY, atau Forex Standar
+    if "XAU" in symbol or "GOLD" in symbol:
+        pip_multiplier = 0.1 / point
+    elif "JPY" in symbol:
+        pip_multiplier = 0.01 / point
+    else:
+        pip_multiplier = 0.0001 / point
+        
+    sl_points = sl_pips * pip_multiplier
     sl_price_distance = sl_points * point 
     
     # 3. Validasi Keamanan MT5 (Penyebab utama Error 10016)

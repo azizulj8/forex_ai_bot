@@ -83,7 +83,7 @@ def run_bot():
                     if positions is None or len(positions) == 0:
                         # Tidak ada posisi terbuka, eksekusi sinyal!
                         print("Tidak ada order aktif. Bot akan mengeksekusi sinyal ini...")
-                        execute_trade_signal(symbol, is_buy_signal, sl_pips=20)
+                        execute_trade_signal(symbol, is_buy_signal, sl_pips=config.SL_PIPS)
                     else:
                         print("Abaikan sinyal: Masih ada posisi yang sedang berjalan/terbuka. Bot menunggu TP atau SL tersentuh.")
                         
