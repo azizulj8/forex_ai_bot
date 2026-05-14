@@ -104,12 +104,13 @@ def run_bot():
                         
                         # 5. Filter Manajemen Posisi
                         positions = mt5.positions_get(symbol=symbol)
+                        max_positions = getattr(config, 'MAX_POSITIONS_PER_SYMBOL', 5)
                         
-                        if positions is None or len(positions) == 0:
+                        if positions is None or len(positions) < max_positions:
                             current_atr = latest_data['ATR'].iloc[0]
                             execute_trade_signal(symbol, is_buy_signal, sl_pips=config.SL_PIPS, current_atr=current_atr)
                         else:
-                            print(f"Abaikan {signal_text}: Masih ada posisi yang sedang berjalan di {symbol}.")
+                            print(f"Batas maksimal {max_positions} posisi tercapai untuk {symbol}. Abaikan sinyal.")
                         
             # Jadwal Rapor Harian: Cek apakah jam 23:55
             current_time = datetime.now()

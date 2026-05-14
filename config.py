@@ -20,6 +20,7 @@ LOOKAHEAD_CANDLES = 30   # Jarak pandang AI ke masa depan untuk target simulasi 
 # 3. Pengaturan Lot (Volume Transaksi)
 USE_FIXED_LOT = True      # Set True jika ingin menggunakan lot tetap (konsisten)
 FIXED_LOT_SIZE = 0.01      # Ukuran lot tetap (contoh 0.01 atau 0.001 untuk akun cent)
+MAX_POSITIONS_PER_SYMBOL = 5  # Maksimal posisi terbuka bersamaan untuk satu mata uang (jika ada sinyal beruntun)
 
 # 3. Path instalasi MT5 di Windows VPS / Parallels
 # Jika bot gagal menemukan MT5, uncomment baris di bawah dan sesuaikan jalurnya:
