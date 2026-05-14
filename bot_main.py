@@ -106,16 +106,24 @@ def run_bot():
                                         'body_size', 'upper_shadow', 'lower_shadow', 'ATR',
                                         'double_top', 'double_bottom']
                         
-                        # 4. Minta Prediksi dari AI
+                        # 4. Minta Prediksi dari AI dengan Probabilitas
+                        probs = ai_model.predict_proba(latest_data[feature_cols])[0]
                         prediction = ai_model.predict(latest_data[feature_cols])[0]
                         
-                        if prediction == 0:
-                            print(f"[{symbol}] Sinyal: NEUTRAL/HOLD (Probabilitas SL tinggi). Skip.")
+                        # Ambil probabilitas untuk kelas yang diprediksi
+                        confidence = probs[prediction]
+                        threshold = getattr(config, 'CONFIDENCE_THRESHOLD', 0.8)
+                        
+                        if prediction == 0 or confidence < threshold:
+                            if prediction != 0:
+                                print(f"[{symbol}] Sinyal {prediction} diabaikan. Keyakinan AI rendah: {confidence:.2f} < {threshold}")
+                            else:
+                                print(f"[{symbol}] Sinyal: NEUTRAL/HOLD (Probabilitas SL tinggi). Skip.")
                             continue
                             
                         is_buy_signal = (prediction == 1)
                         signal_text = "BUY" if is_buy_signal else "SELL"
-                        print(f"[{symbol}] Sinyal AI Terdeteksi: {signal_text}")
+                        print(f"[{symbol}] Sinyal AI Terdeteksi: {signal_text} (Keyakinan: {confidence:.2f})")
                         
                         # 5. Filter Manajemen Posisi
                         positions = mt5.positions_get(symbol=symbol)

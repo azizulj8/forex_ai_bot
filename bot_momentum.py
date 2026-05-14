@@ -93,15 +93,24 @@ def run_bot():
                                         'momentum_surge', 'wick_ratio', 'is_bullish_engulfing', 
                                         'is_bearish_engulfing', 'direction_streak']
                         
+                        # 4. Minta Prediksi dari AI dengan Probabilitas
+                        probs = ai_model.predict_proba(latest_data[feature_cols])[0]
                         prediction = ai_model.predict(latest_data[feature_cols])[0]
                         
-                        if prediction == 0:
-                            print(f"[{symbol}] Momentum LEMAH / Berisiko. HOLD.")
+                        # Ambil probabilitas untuk kelas yang diprediksi
+                        confidence = probs[prediction]
+                        threshold = getattr(config, 'CONFIDENCE_THRESHOLD', 0.8)
+                        
+                        if prediction == 0 or confidence < threshold:
+                            if prediction != 0:
+                                print(f"[{symbol}] Momentum {prediction} diabaikan. Keyakinan AI rendah: {confidence:.2f} < {threshold}")
+                            else:
+                                print(f"[{symbol}] Momentum LEMAH / Berisiko. HOLD.")
                             continue
                             
                         is_buy_signal = (prediction == 1)
                         signal_text = "BUY" if is_buy_signal else "SELL"
-                        print(f"[{symbol}] 🔥 MOMENTUM TERDETEKSI: {signal_text} 🔥")
+                        print(f"[{symbol}] 🔥 MOMENTUM TERDETEKSI: {signal_text} (Keyakinan: {confidence:.2f}) 🔥")
                         
                         positions = mt5.positions_get(symbol=symbol)
                         max_positions = getattr(config, 'MAX_POSITIONS_PER_SYMBOL', 5)

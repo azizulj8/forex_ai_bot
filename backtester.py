@@ -46,8 +46,14 @@ def run_backtest():
                         'body_size', 'upper_shadow', 'lower_shadow', 'ATR',
                         'double_top', 'double_bottom']
                         
-        print("AI sedang memprediksi semua riwayat masa lalu...")
-        df_features['prediction'] = ai_model.predict(df_features[feature_cols])
+        print("AI sedang memprediksi semua riwayat masa lalu dengan Strict Mode (threshold)...")
+        # Dapatkan probabilitas
+        probs = ai_model.predict_proba(df_features[feature_cols])
+        # Dapatkan prediksi
+        predictions = ai_model.predict(df_features[feature_cols])
+        
+        df_features['prediction'] = predictions
+        df_features['confidence'] = [p[predictions[i]] for i, p in enumerate(probs)]
         
         print(f"\nMenjalankan simulasi finansial (Virtual Trade) {symbol}...")
         
@@ -56,13 +62,14 @@ def run_backtest():
         balance = initial_balance
         risk_percent = config.RISK_PERCENT       # Risiko 1% dari config
         risk_reward_ratio = config.RISK_REWARD_RATIO # Rasio 1:2 dari config
+        threshold = getattr(config, 'CONFIDENCE_THRESHOLD', 0.8)
         
         win_count = 0
         loss_count = 0
         total_trades = 0
         
         for index, row in df_features.iterrows():
-            if row['prediction'] == 0:
+            if row['prediction'] == 0 or row['confidence'] < threshold:
                 continue
                 
             risk_amount = balance * risk_percent
