@@ -91,19 +91,23 @@ def execute_trade_signal(symbol, signal_is_buy, sl_pips=20):
     
     tick = mt5.symbol_info_tick(symbol)
     
-    # Cek minimum batasan jarak SL dari broker
+    # 1. Dapatkan informasi spread dan batas minimum broker
     min_stop_points = symbol_info.trade_stops_level
+    spread_price = tick.ask - tick.bid
     
-    # Konversi pips ke points
+    # 2. Konversi pips permintaan user ke jarak harga aktual
     sl_points = sl_pips * 10
-    
-    # Jika SL kita terlalu sempit untuk aturan broker, paksa perlebar ke batas minimum broker
-    if sl_points < min_stop_points:
-        sl_points = min_stop_points
-        print(f"Perhatian: Jarak SL terlalu kecil untuk broker ini. Diperlebar otomatis ke {sl_points} points.")
-        
     sl_price_distance = sl_points * point 
-    tp_price_distance = sl_points * config.RISK_REWARD_RATIO * point
+    
+    # 3. Validasi Keamanan MT5 (Penyebab utama Error 10016)
+    # Jarak SL HARUS lebih besar dari Spread + Stops_Level agar tidak bentrok dengan harga berlawanan.
+    safe_min_distance = spread_price + (min_stop_points * point) + (2 * point)
+    
+    if sl_price_distance <= safe_min_distance:
+        sl_price_distance = safe_min_distance + (5 * point)
+        print(f"Perhatian: SL diperlebar otomatis karena jarak aslinya menabrak Spread broker!")
+        
+    tp_price_distance = sl_price_distance * config.RISK_REWARD_RATIO
 
     if signal_is_buy:
         current_price = tick.ask
