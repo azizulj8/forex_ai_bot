@@ -11,8 +11,8 @@ SYMBOLS = ["XAUUSDm", "EURUSDm", "GBPUSDm"]  # Simbol yang akan ditradingkan
 TIMEFRAME_MAIN = "M5"      # Timeframe untuk bot klasik/main (indikator lagging)
 TIMEFRAME_MOMENTUM = "M1"  # Timeframe untuk bot momentum scalping (real-time price action)
 RISK_PERCENT = 0.01  # Risiko per trade adalah 1% dari total balance akun (Hanya jika USE_FIXED_LOT = False)
-RISK_REWARD_RATIO = 1.5  # Rasio lebih realistis untuk scalping (1:1.5)
-SL_PIPS = 10              # Stop Loss cuma 10 pips (Scalping ketat)
+RISK_REWARD_RATIO = 2.0  # Kembali ke rasio 1:2 sesuai permintaan
+SL_PIPS = 10              # Tetap 10 pips agar TP (20 pips) masih terhitung scalping cepat
 USE_DYNAMIC_SL = True     
 ATR_SL_MULTIPLIER = 1.0   # SL mengikuti volatilitas tapi tidak terlalu lebar
 LOOKAHEAD_CANDLES = 15    # AI hanya memprediksi nasib trade dalam 15 menit ke depan (M1)
