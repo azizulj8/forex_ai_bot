@@ -17,5 +17,5 @@ RISK_REWARD_RATIO = 2.0  # Risk:Reward ratio = 1:2 (TP dua kali lipat lebih besa
 # MT5_PATH = r"C:\Program Files\MetaTrader 5\terminal64.exe"
 
 # 4. Pengaturan Pelaporan Telegram
-TELEGRAM_BOT_TOKEN = "MASUKKAN_TOKEN_BOT_ANDA_DISINI"
-TELEGRAM_CHAT_ID = "MASUKKAN_CHAT_ID_ANDA_DISINI"
+TELEGRAM_BOT_TOKEN = "8616880679:AAHqAtJr_zQsg7P9XhsfHEW4n9Ee9Z-vm2Q"
+TELEGRAM_CHAT_ID = "6844797994"
