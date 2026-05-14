@@ -37,7 +37,7 @@ def run_backtest():
     df_features = extract_features(df)
     
     feature_cols = ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_Signal', 
-                    'body_size', 'upper_shadow', 'lower_shadow']
+                    'body_size', 'upper_shadow', 'lower_shadow', 'ATR']
                     
     print("AI sedang memprediksi semua riwayat masa lalu...")
     df_features['prediction'] = ai_model.predict(df_features[feature_cols])

@@ -13,7 +13,7 @@ def train_and_save_model(df, model_path="model_rf.pkl"):
     
     # Fitur-fitur yang akan dipelajari AI dari data_processor.py
     feature_cols = ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_Signal', 
-                    'body_size', 'upper_shadow', 'lower_shadow']
+                    'body_size', 'upper_shadow', 'lower_shadow', 'ATR']
     
     X = df[feature_cols]
     y = df['target']

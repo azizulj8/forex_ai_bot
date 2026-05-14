@@ -77,7 +77,7 @@ def send_order(symbol, order_type, lot_size, sl_price, tp_price):
     print(f"ORDER BERHASIL! Tiket No: {result.order}")
     return result
 
-def execute_trade_signal(symbol, signal_is_buy, sl_pips=20):
+def execute_trade_signal(symbol, signal_is_buy, sl_pips=20, current_atr=None):
     """
     Fungsi yang akan dipanggil oleh AI saat ada sinyal trading baru.
     Akan otomatis menghitung SL dan TP rasio 1:2.
@@ -95,17 +95,24 @@ def execute_trade_signal(symbol, signal_is_buy, sl_pips=20):
     min_stop_points = symbol_info.trade_stops_level
     spread_price = tick.ask - tick.bid
     
-    # 2. Konversi pips permintaan user ke jarak harga aktual
-    # Konversi otomatis untuk Gold (XAU), JPY, atau Forex Standar
-    if "XAU" in symbol or "GOLD" in symbol:
-        pip_multiplier = 0.1 / point
-    elif "JPY" in symbol:
-        pip_multiplier = 0.01 / point
+    # 2. Kalkulasi Jarak Harga Stop Loss (Statis vs Dinamis ATR)
+    if getattr(config, 'USE_DYNAMIC_SL', False) and current_atr is not None:
+        # Jarak SL = Nilai ATR x Multiplier
+        atr_multiplier = getattr(config, 'ATR_SL_MULTIPLIER', 1.5)
+        sl_price_distance = current_atr * atr_multiplier
+        print(f"Menggunakan DYNAMIC SL (ATR): Jarak Harga {sl_price_distance:.5f}")
     else:
-        pip_multiplier = 0.0001 / point
-        
-    sl_points = sl_pips * pip_multiplier
-    sl_price_distance = sl_points * point 
+        # Konversi otomatis untuk Gold (XAU), JPY, atau Forex Standar
+        if "XAU" in symbol or "GOLD" in symbol:
+            pip_multiplier = 0.1 / point
+        elif "JPY" in symbol:
+            pip_multiplier = 0.01 / point
+        else:
+            pip_multiplier = 0.0001 / point
+            
+        sl_points = sl_pips * pip_multiplier
+        sl_price_distance = sl_points * point 
+        print(f"Menggunakan STATIS SL: Jarak Harga {sl_price_distance:.5f}")
     
     # 3. Validasi Keamanan MT5 (Penyebab utama Error 10016)
     # Jarak SL HARUS lebih besar dari Spread + Stops_Level agar tidak bentrok dengan harga berlawanan.

@@ -20,6 +20,18 @@ def calculate_macd(data, short_period=12, long_period=26, signal_period=9):
     signal = macd.ewm(span=signal_period, adjust=False).mean()
     return macd, signal
 
+def calculate_atr(data, period=14):
+    """Menghitung Average True Range (ATR) untuk mendeteksi volatilitas harga"""
+    high_low = data['high'] - data['low']
+    high_close = np.abs(data['high'] - data['close'].shift())
+    low_close = np.abs(data['low'] - data['close'].shift())
+    
+    ranges = pd.concat([high_low, high_close, low_close], axis=1)
+    true_range = np.max(ranges, axis=1)
+    
+    atr = true_range.rolling(window=period).mean()
+    return atr
+
 def extract_features(df):
     """
     Menambahkan indikator teknikal ke dalam DataFrame harga sebagai fitur untuk AI.
@@ -38,6 +50,9 @@ def extract_features(df):
     
     # MACD
     df['MACD'], df['MACD_Signal'] = calculate_macd(df)
+    
+    # ATR (Average True Range)
+    df['ATR'] = calculate_atr(df, period=14)
     
     # Fitur pergerakan harga dasar
     df['body_size'] = df['close'] - df['open']

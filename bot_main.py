@@ -65,7 +65,7 @@ def run_bot():
                     
                     # Kolom yang dikenali AI
                     feature_cols = ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_Signal', 
-                                    'body_size', 'upper_shadow', 'lower_shadow']
+                                    'body_size', 'upper_shadow', 'lower_shadow', 'ATR']
                     
                     # 4. Minta Prediksi dari AI
                     prediction = ai_model.predict(latest_data[feature_cols])[0]
@@ -82,8 +82,8 @@ def run_bot():
                     
                     if positions is None or len(positions) == 0:
                         # Tidak ada posisi terbuka, eksekusi sinyal!
-                        print("Tidak ada order aktif. Bot akan mengeksekusi sinyal ini...")
-                        execute_trade_signal(symbol, is_buy_signal, sl_pips=config.SL_PIPS)
+                        current_atr = latest_data['ATR'].iloc[0]
+                        execute_trade_signal(symbol, is_buy_signal, sl_pips=config.SL_PIPS, current_atr=current_atr)
                     else:
                         print("Abaikan sinyal: Masih ada posisi yang sedang berjalan/terbuka. Bot menunggu TP atau SL tersentuh.")
                         
