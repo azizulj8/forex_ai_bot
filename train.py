@@ -26,7 +26,7 @@ def main():
         "M15": mt5.TIMEFRAME_M15,
         "H1": mt5.TIMEFRAME_H1
     }
-    mt5_tf = tf_mapping.get(config.TIMEFRAME, mt5.TIMEFRAME_M5)
+    mt5_tf = tf_mapping.get(config.TIMEFRAME_MAIN, mt5.TIMEFRAME_M5)
 
     # 2. Loop semua simbol yang ada di config
     for symbol in config.SYMBOLS:

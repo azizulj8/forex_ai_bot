@@ -29,7 +29,7 @@ def run_bot():
         "M15": mt5.TIMEFRAME_M15,
         "H1": mt5.TIMEFRAME_H1
     }
-    mt5_tf = tf_mapping.get(config.TIMEFRAME, mt5.TIMEFRAME_M1)
+    mt5_tf = tf_mapping.get(config.TIMEFRAME_MOMENTUM, mt5.TIMEFRAME_M1)
 
     models = {}
     last_candle_times = {}
@@ -49,7 +49,7 @@ def run_bot():
         mt5_connector.close_connection()
         return
         
-    print(f"\nBot Momentum siap mengawasi pasar di timeframe {config.TIMEFRAME}...")
+    print(f"\nBot Momentum siap mengawasi pasar di timeframe {config.TIMEFRAME_MOMENTUM}...")
     report_sent = False
 
     try:

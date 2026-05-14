@@ -33,7 +33,7 @@ def run_bot():
         "M15": mt5.TIMEFRAME_M15,
         "H1": mt5.TIMEFRAME_H1
     }
-    mt5_tf = tf_mapping.get(config.TIMEFRAME, mt5.TIMEFRAME_M1)
+    mt5_tf = tf_mapping.get(config.TIMEFRAME_MAIN, mt5.TIMEFRAME_M5)
 
     models = {}
     last_candle_times = {}
@@ -54,7 +54,7 @@ def run_bot():
         mt5_connector.close_connection()
         return
         
-    print(f"\nBot siap mengawasi pasar di timeframe {config.TIMEFRAME}...")
+    print(f"\nBot siap mengawasi pasar di timeframe {config.TIMEFRAME_MAIN}...")
     print("Tekan Ctrl+C untuk menghentikan bot.")
     
     report_sent = False

@@ -7,8 +7,9 @@ MT5_PASSWORD = "your_password"  # Ganti dengan password akun Demo Anda
 MT5_SERVER = "Exness-MT5Trial"  # Ganti dengan nama server broker Anda (tergantung broker)
 
 # 2. Konfigurasi Trading
-SYMBOLS = ["XAUUSDm", "EURUSDm", "GBPUSDm"]  # Simbol yang akan ditradingkan (Exness sering menambahkan 'm' di akhir untuk akun Standard, atau tanpa huruf untuk Raw)
-TIMEFRAME = "M1"  # Timeframe untuk scalping agresif (M1)
+SYMBOLS = ["XAUUSDm", "EURUSDm", "GBPUSDm"]  # Simbol yang akan ditradingkan
+TIMEFRAME_MAIN = "M5"      # Timeframe untuk bot klasik/main (indikator lagging)
+TIMEFRAME_MOMENTUM = "M1"  # Timeframe untuk bot momentum scalping (real-time price action)
 RISK_PERCENT = 0.01  # Risiko per trade adalah 1% dari total balance akun (Hanya jika USE_FIXED_LOT = False)
 RISK_REWARD_RATIO = 2.0  # Risk:Reward ratio = 1:2 (TP dua kali lipat lebih besar dari SL)
 SL_PIPS = 30  # Jarak Stop Loss standar dalam pips (Bisa Anda naikkan jika terlalu sering kena SL)

@@ -21,7 +21,7 @@ def run_backtest():
         "M15": mt5.TIMEFRAME_M15,
         "H1": mt5.TIMEFRAME_H1
     }
-    mt5_tf = tf_mapping.get(config.TIMEFRAME, mt5.TIMEFRAME_M1)
+    mt5_tf = tf_mapping.get(config.TIMEFRAME_MAIN, mt5.TIMEFRAME_M5)
 
     for symbol in config.SYMBOLS:
         print(f"\n================= {symbol} =================")
