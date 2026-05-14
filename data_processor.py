@@ -33,11 +33,30 @@ def calculate_atr(data, period=14):
     atr = true_range.rolling(window=period).mean()
     return atr
 
-def generate_smart_targets(df, lookahead=12):
+def detect_price_action_patterns(df, window=10, tolerance_percent=0.0005):
+    """
+    Mendeteksi pola Double Top dan Double Bottom sederhana.
+    """
+    local_max = df['high'].rolling(window=window).max()
+    local_min = df['low'].rolling(window=window).min()
+    
+    tolerance = df['close'] * tolerance_percent
+    
+    is_near_top = (local_max - df['high']) <= tolerance
+    is_near_bottom = (df['low'] - local_min) <= tolerance
+    
+    # Double Top jika saat ini dekat puncak, dan sebelumnya juga pernah dekat puncak di window yg sama
+    double_top = is_near_top & (is_near_top.rolling(window=window).sum() > 1)
+    double_bottom = is_near_bottom & (is_near_bottom.rolling(window=window).sum() > 1)
+    
+    return double_top.astype(int), double_bottom.astype(int)
+
+def generate_smart_targets(df):
     """
     Mensimulasikan setiap baris data untuk melihat apakah TP akan tersentuh duluan sebelum SL.
     Target: 1 (Buy untung), 2 (Sell untung), 0 (Neutral/SL duluan).
     """
+    lookahead = getattr(config, 'LOOKAHEAD_CANDLES', 30)
     targets = np.zeros(len(df))
     
     # Dapatkan parameter dari config
@@ -116,9 +135,12 @@ def extract_features(df):
     df['upper_shadow'] = df['high'] - df[['open', 'close']].max(axis=1)
     df['lower_shadow'] = df[['open', 'close']].min(axis=1) - df['low']
     
+    # Deteksi Pola Price Action (Double Top/Bottom)
+    df['double_top'], df['double_bottom'] = detect_price_action_patterns(df)
+    
     # Target prediksi (Smart Simulation)
     # 1: Buy Success, 2: Sell Success, 0: Neutral/Loss
-    df = generate_smart_targets(df, lookahead=12)
+    df = generate_smart_targets(df)
     
     # Hapus baris yang mengandung NaN
     df.dropna(inplace=True)

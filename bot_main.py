@@ -73,7 +73,8 @@ def run_bot():
                     
                     # Kolom yang dikenali AI
                     feature_cols = ['SMA_10', 'SMA_20', 'SMA_50', 'RSI', 'MACD', 'MACD_Signal', 
-                                    'body_size', 'upper_shadow', 'lower_shadow', 'ATR']
+                                    'body_size', 'upper_shadow', 'lower_shadow', 'ATR',
+                                    'double_top', 'double_bottom']
                     
                     # 4. Minta Prediksi dari AI
                     prediction = ai_model.predict(latest_data[feature_cols])[0]
