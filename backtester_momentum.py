@@ -50,7 +50,7 @@ def run_backtest_momentum():
         predictions = ai_model.predict(df_features[feature_cols])
         
         df_features['prediction'] = predictions
-        df_features['confidence'] = [p[predictions[i]] for i, p in enumerate(probs)]
+        df_features['confidence'] = probs.max(axis=1)
         
         # Variabel simulasi
         initial_balance = 1000.0

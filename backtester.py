@@ -53,7 +53,7 @@ def run_backtest():
         predictions = ai_model.predict(df_features[feature_cols])
         
         df_features['prediction'] = predictions
-        df_features['confidence'] = [p[predictions[i]] for i, p in enumerate(probs)]
+        df_features['confidence'] = probs.max(axis=1)
         
         print(f"\nMenjalankan simulasi finansial (Virtual Trade) {symbol}...")
         
