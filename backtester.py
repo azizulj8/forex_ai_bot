@@ -58,12 +58,16 @@ def run_backtest():
     # Jika Prediksi (prediction) sama dengan Kenyataan Arah Harga (target), berarti Menang (Kena TP).
     # Jika beda, berarti Kalah (Kena SL).
     for index, row in df_features.iterrows():
-        # Hitung ukuran risiko dalam dolar saat ini (dinamis mengikuti saldo yang naik/turun)
+        # Jika AI menyarankan HOLD (0), jangan hitung sebagai trade
+        if row['prediction'] == 0:
+            continue
+            
+        # Hitung ukuran risiko dalam dolar saat ini
         risk_amount = balance * risk_percent
         profit_amount = risk_amount * risk_reward_ratio
         
-        # Cek apakah tebakan AI tepat pada candle tersebut
-        if row['prediction'] == row['target']:
+        # Cek apakah prediksi (1/2) cocok dengan kenyataan smart_target (1/2)
+        if row['prediction'] == row['smart_target']:
             balance += profit_amount
             win_count += 1
         else:

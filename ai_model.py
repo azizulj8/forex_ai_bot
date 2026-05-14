@@ -16,7 +16,7 @@ def train_and_save_model(df, model_path="model_rf.pkl"):
                     'body_size', 'upper_shadow', 'lower_shadow', 'ATR']
     
     X = df[feature_cols]
-    y = df['target']
+    y = df['smart_target']
     
     # Memisahkan data: 80% untuk training, 20% untuk pengujian (testing)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, shuffle=False)
@@ -36,7 +36,7 @@ def train_and_save_model(df, model_path="model_rf.pkl"):
     tscv = TimeSeriesSplit(n_splits=3)
     
     # Inisialisasi mesin pencari Grid
-    rf_base = RandomForestClassifier(random_state=42)
+    rf_base = RandomForestClassifier(class_weight='balanced', random_state=42)
     grid_search = GridSearchCV(estimator=rf_base, param_grid=param_grid, 
                                cv=tscv, scoring='accuracy', n_jobs=-1, verbose=0)
                                

@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import config
 
 def calculate_rsi(data, period=14):
     """Menghitung Relative Strength Index (RSI)"""
@@ -32,6 +33,62 @@ def calculate_atr(data, period=14):
     atr = true_range.rolling(window=period).mean()
     return atr
 
+def generate_smart_targets(df, lookahead=12):
+    """
+    Mensimulasikan setiap baris data untuk melihat apakah TP akan tersentuh duluan sebelum SL.
+    Target: 1 (Buy untung), 2 (Sell untung), 0 (Neutral/SL duluan).
+    """
+    targets = np.zeros(len(df))
+    
+    # Dapatkan parameter dari config
+    sl_multiplier = getattr(config, 'ATR_SL_MULTIPLIER', 1.5)
+    tp_multiplier = sl_multiplier * getattr(config, 'RISK_REWARD_RATIO', 2.0)
+    
+    # Konversi ke numpy untuk kecepatan proses
+    closes = df['close'].values
+    highs = df['high'].values
+    lows = df['low'].values
+    atrs = df['ATR'].values
+    
+    for i in range(len(df) - lookahead):
+        price_entry = closes[i]
+        atr = atrs[i]
+        
+        # Jarak harga (bukan pips)
+        sl_dist = atr * sl_multiplier
+        tp_dist = atr * tp_multiplier
+        
+        # Ambil jendela masa depan
+        future_highs = highs[i+1 : i+1+lookahead]
+        future_lows = lows[i+1 : i+1+lookahead]
+        
+        buy_win = False
+        sell_win = False
+        
+        # Simulasi BUY
+        for j in range(len(future_highs)):
+            if future_lows[j] <= (price_entry - sl_dist):
+                break # Kena SL
+            if future_highs[j] >= (price_entry + tp_dist):
+                buy_win = True
+                break # Kena TP
+                
+        # Simulasi SELL
+        for j in range(len(future_highs)):
+            if future_highs[j] >= (price_entry + sl_dist):
+                break # Kena SL
+            if future_lows[j] <= (price_entry - tp_dist):
+                sell_win = True
+                break # Kena TP
+                
+        if buy_win and not sell_win:
+            targets[i] = 1
+        elif sell_win and not buy_win:
+            targets[i] = 2
+            
+    df['smart_target'] = targets
+    return df
+
 def extract_features(df):
     """
     Menambahkan indikator teknikal ke dalam DataFrame harga sebagai fitur untuk AI.
@@ -59,12 +116,11 @@ def extract_features(df):
     df['upper_shadow'] = df['high'] - df[['open', 'close']].max(axis=1)
     df['lower_shadow'] = df[['open', 'close']].min(axis=1) - df['low']
     
-    # Target prediksi (Supervised Learning)
-    # 1 jika harga close candle BERIKUTNYA lebih tinggi (Buy), 0 jika turun (Sell)
-    # Ini untuk melatih model memprediksi arah candle selanjutnya
-    df['target'] = (df['close'].shift(-1) > df['close']).astype(int)
+    # Target prediksi (Smart Simulation)
+    # 1: Buy Success, 2: Sell Success, 0: Neutral/Loss
+    df = generate_smart_targets(df, lookahead=12)
     
-    # Hapus baris yang mengandung NaN (karena rolling window/shift)
+    # Hapus baris yang mengandung NaN
     df.dropna(inplace=True)
     
     return df

@@ -69,12 +69,14 @@ def run_bot():
                     
                     # 4. Minta Prediksi dari AI
                     prediction = ai_model.predict(latest_data[feature_cols])[0]
-                    is_buy_signal = (prediction == 1)
                     
-                    if is_buy_signal:
-                        print(">> PREDIKSI AI: HARGA AKAN NAIK (Sinyal BUY)")
-                    else:
-                        print(">> PREDIKSI AI: HARGA AKAN TURUN (Sinyal SELL)")
+                    if prediction == 0:
+                        print(f"[{symbol}] Sinyal: NEUTRAL/HOLD (Probabilitas SL tinggi). Skip.")
+                        continue
+                        
+                    is_buy_signal = (prediction == 1)
+                    signal_text = "BUY" if is_buy_signal else "SELL"
+                    print(f"[{symbol}] Sinyal AI Terdeteksi: {signal_text}")
                     
                     # 5. Filter Manajemen Posisi
                     # Bot ini tidak akan membuka posisi baru jika masih ada posisi yang belum menyentuh TP/SL
@@ -85,7 +87,7 @@ def run_bot():
                         current_atr = latest_data['ATR'].iloc[0]
                         execute_trade_signal(symbol, is_buy_signal, sl_pips=config.SL_PIPS, current_atr=current_atr)
                     else:
-                        print("Abaikan sinyal: Masih ada posisi yang sedang berjalan/terbuka. Bot menunggu TP atau SL tersentuh.")
+                        print(f"Abaikan {signal_text}: Masih ada posisi yang sedang berjalan.")
                         
             # Jadwal Rapor Harian: Cek apakah jam 23:55
             current_time = datetime.now()
