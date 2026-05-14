@@ -6,29 +6,31 @@ def calculate_lot_size(symbol, stop_loss_pips):
     Menghitung ukuran lot berdasarkan persentase risiko dari saldo (config.RISK_PERCENT).
     Menerapkan Money Management otomatis agar kerugian tidak melebihi batas.
     """
-    account_info = mt5.account_info()
-    if account_info is None:
-        print("Gagal mendapatkan info akun MT5")
-        return 0.01 # Default lot terkecil jika gagal
-
-    balance = account_info.balance
-    risk_amount = balance * config.RISK_PERCENT
-    
     symbol_info = mt5.symbol_info(symbol)
     if symbol_info is None:
         return 0.01
-        
-    # Pendekatan konversi pip value (1 pip standard = $10)
-    # Ini sangat bergantung pada jenis mata uang, tetapi kita buat perkiraan aman
-    tick_value = symbol_info.trade_tick_value
-    
-    # Konversi pips menjadi points/ticks
-    sl_ticks = stop_loss_pips * 10 
-    
-    if tick_value > 0 and sl_ticks > 0:
-        lot_size = risk_amount / (sl_ticks * tick_value)
+
+    if getattr(config, 'USE_FIXED_LOT', False):
+        lot_size = config.FIXED_LOT_SIZE
     else:
-        lot_size = 0.01
+        account_info = mt5.account_info()
+        if account_info is None:
+            print("Gagal mendapatkan info akun MT5")
+            return config.FIXED_LOT_SIZE if hasattr(config, 'FIXED_LOT_SIZE') else 0.01
+
+        balance = account_info.balance
+        risk_amount = balance * config.RISK_PERCENT
+        
+        # Pendekatan konversi pip value (1 pip standard = $10)
+        tick_value = symbol_info.trade_tick_value
+        
+        # Konversi pips menjadi points/ticks
+        sl_ticks = stop_loss_pips * 10 
+        
+        if tick_value > 0 and sl_ticks > 0:
+            lot_size = risk_amount / (sl_ticks * tick_value)
+        else:
+            lot_size = 0.01
 
     # Pembatasan lot agar sesuai aturan broker (minimal dan maksimal lot)
     if lot_size < symbol_info.volume_min:

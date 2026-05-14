@@ -9,11 +9,15 @@ MT5_SERVER = "Exness-MT5Trial"  # Ganti dengan nama server broker Anda (tergantu
 # 2. Konfigurasi Trading
 SYMBOLS = ["XAUUSDm", "EURUSDm", "GBPUSDm"]  # Simbol yang akan ditradingkan (Exness sering menambahkan 'm' di akhir untuk akun Standard, atau tanpa huruf untuk Raw)
 TIMEFRAME = "M5"  # Timeframe untuk scalping (M1 atau M5)
-RISK_PERCENT = 0.01  # Risiko per trade adalah 1% dari total balance akun
+RISK_PERCENT = 0.01  # Risiko per trade adalah 1% dari total balance akun (Hanya jika USE_FIXED_LOT = False)
 RISK_REWARD_RATIO = 2.0  # Risk:Reward ratio = 1:2 (TP dua kali lipat lebih besar dari SL)
 SL_PIPS = 30  # Jarak Stop Loss standar dalam pips (Bisa Anda naikkan jika terlalu sering kena SL)
 USE_DYNAMIC_SL = True  # Jika True, bot mengabaikan SL_PIPS dan menggunakan volatilitas pasar (ATR)
 ATR_SL_MULTIPLIER = 1.5  # Pengali ATR untuk SL. (Contoh: 1.5x rata-rata pergerakan)
+
+# 3. Pengaturan Lot (Volume Transaksi)
+USE_FIXED_LOT = True      # Set True jika ingin menggunakan lot tetap (konsisten)
+FIXED_LOT_SIZE = 0.01      # Ukuran lot tetap (contoh 0.01 atau 0.001 untuk akun cent)
 
 # 3. Path instalasi MT5 di Windows VPS / Parallels
 # Jika bot gagal menemukan MT5, uncomment baris di bawah dan sesuaikan jalurnya:
