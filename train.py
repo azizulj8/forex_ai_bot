@@ -2,6 +2,14 @@ import config
 import mt5_connector
 from data_processor import extract_features
 from ai_model import train_and_save_model
+import sys
+
+# Memastikan versi Python 3.11+
+if sys.version_info < (3, 11):
+    print("EROR: Script training ini memerlukan Python versi 3.11 ke atas.")
+    print(f"Versi Anda saat ini: {sys.version}")
+    sys.exit(1)
+
 import MetaTrader5 as mt5
 
 def main():

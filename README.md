@@ -13,7 +13,7 @@ Sistem *Automated Trading* (Robot Trading) berbasis Artificial Intelligence (AI)
 ## Persyaratan Sistem (Requirements)
 - **Sistem Operasi:** Windows (Wajib, karena *library* `MetaTrader5` Python hanya berjalan di Windows secara natively. Jika Anda menggunakan Mac, gunakan VPS Windows atau Virtual Machine seperti Parallels).
 - **Aplikasi:** MetaTrader 5 Terminal terinstal dan terhubung ke akun broker Anda (contoh: Exness, IC Markets).
-- **Python:** Versi 3.9 ke atas.
+- **Python:** Versi 3.11 ke atas (Disarankan 3.12+).
 - **Library:** 
   - `MetaTrader5`
   - `pandas`

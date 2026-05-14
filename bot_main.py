@@ -1,4 +1,12 @@
 import time
+import sys
+
+# Memastikan versi Python 3.11+
+if sys.version_info < (3, 11):
+    print("EROR: Bot ini memerlukan Python versi 3.11 ke atas.")
+    print(f"Versi Anda saat ini: {sys.version}")
+    sys.exit(1)
+
 import MetaTrader5 as mt5
 import pandas as pd
 from datetime import datetime
