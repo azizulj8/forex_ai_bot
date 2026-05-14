@@ -45,9 +45,9 @@ def main():
             
             # 4. Ajarkan AI dengan data tersebut
             print("\n[3] Memulai pembelajaran (Training) AI...")
-            model_filename = f"model_{symbol}.pkl"
+            model_filename = f"model_{symbol}_new.pkl"
             train_and_save_model(df_featured, model_path=model_filename)
-            print(f"\nTraining Selesai! Otak AI telah disimpan di file {model_filename}.")
+            print(f"\nTraining Selesai! Calon otak AI telah disimpan di file {model_filename}.")
         else:
             print(f"Gagal mendapatkan data untuk {symbol}. Pastikan nama simbol di config.py sama persis dengan yang ada di Market Watch MT5.")
 

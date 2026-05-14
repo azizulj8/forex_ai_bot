@@ -79,7 +79,7 @@ def send_order(symbol, order_type, lot_size, sl_price, tp_price):
     print(f"ORDER BERHASIL! Tiket No: {result.order}")
     return result
 
-def execute_trade_signal(symbol, signal_is_buy, sl_pips=20, current_atr=None):
+def execute_trade_signal(symbol, signal_is_buy, sl_pips=20, current_atr=None, features_dict=None, bot_type="MAIN"):
     """
     Fungsi yang akan dipanggil oleh AI saat ada sinyal trading baru.
     Akan otomatis menghitung SL dan TP rasio 1:2.
@@ -131,10 +131,30 @@ def execute_trade_signal(symbol, signal_is_buy, sl_pips=20, current_atr=None):
         sl_price = round(current_price - sl_price_distance, digits)
         tp_price = round(current_price + tp_price_distance, digits)
         print(f"Sinyal BUY Tereksekusi! Harga: {current_price} | SL: {sl_price} | TP: {tp_price}")
-        return send_order(symbol, mt5.ORDER_TYPE_BUY, lot_size, sl_price, tp_price)
+        result = send_order(symbol, mt5.ORDER_TYPE_BUY, lot_size, sl_price, tp_price)
     else:
         current_price = tick.bid
         sl_price = round(current_price + sl_price_distance, digits)
         tp_price = round(current_price - tp_price_distance, digits)
         print(f"Sinyal SELL Tereksekusi! Harga: {current_price} | SL: {sl_price} | TP: {tp_price}")
-        return send_order(symbol, mt5.ORDER_TYPE_SELL, lot_size, sl_price, tp_price)
+        result = send_order(symbol, mt5.ORDER_TYPE_SELL, lot_size, sl_price, tp_price)
+        
+    # Jika order berhasil, simpan ke database lokal untuk bahan AI belajar nanti
+    if result is not None:
+        try:
+            import database_manager
+            database_manager.save_open_trade(
+                symbol=symbol,
+                trade_type='BUY' if signal_is_buy else 'SELL',
+                open_price=current_price,
+                sl=sl_price,
+                tp=tp_price,
+                features_dict=features_dict if features_dict else {},
+                bot_type=bot_type
+            )
+            print("Trade berhasil dicatat ke database lokal.")
+        except Exception as e:
+            print(f"Gagal mencatat trade ke DB: {e}")
+            
+    return result
+

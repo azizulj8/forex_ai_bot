@@ -63,6 +63,21 @@ def run_bot():
         # 3. Loop utama bot (Berjalan tanpa henti)
         while True:
             for symbol, ai_model in models.items():
+                # HOT-SWAP: Cek apakah ada update model baru di disk
+                model_filename = f"model_{symbol}.pkl"
+                try:
+                    current_mtime = os.path.getmtime(model_filename)
+                    if not hasattr(ai_model, 'last_mtime'):
+                        ai_model.last_mtime = current_mtime
+                    elif current_mtime > ai_model.last_mtime:
+                        print(f"[{symbol}] Deteksi update model baru! Memuat ulang otak...")
+                        new_model = load_model(model_filename)
+                        if new_model:
+                            models[symbol] = new_model
+                            models[symbol].last_mtime = current_mtime
+                except:
+                    pass
+
                 # Mengambil 100 candle terbaru untuk kalkulasi indikator
                 df = mt5_connector.get_historical_data(symbol, mt5_tf, 100)
                 if df is None or df.empty:
@@ -108,9 +123,13 @@ def run_bot():
                         
                         if positions is None or len(positions) < max_positions:
                             current_atr = latest_data['ATR'].iloc[0]
-                            execute_trade_signal(symbol, is_buy_signal, sl_pips=config.SL_PIPS, current_atr=current_atr)
+                            # Kirim fitur yang digunakan AI ke executor agar dicatat ke DB
+                            features_dict = latest_data[feature_cols].iloc[0].to_dict()
+                            execute_trade_signal(symbol, is_buy_signal, sl_pips=config.SL_PIPS, 
+                                               current_atr=current_atr, features_dict=features_dict, bot_type="MAIN")
                         else:
                             print(f"Batas maksimal {max_positions} posisi tercapai untuk {symbol}. Abaikan sinyal.")
+
                         
             # Jadwal Rapor Harian: Cek apakah jam 23:55
             current_time = datetime.now()

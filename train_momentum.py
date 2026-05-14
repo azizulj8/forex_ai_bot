@@ -35,9 +35,9 @@ def main():
             df_featured = extract_features(df)
             
             print("\n[3] Memulai pembelajaran AI Momentum...")
-            model_filename = f"model_momentum_{symbol}.pkl"
+            model_filename = f"model_momentum_{symbol}_new.pkl"
             train_and_save_model(df_featured, model_path=model_filename)
-            print(f"\nTraining Selesai! Otak AI Momentum disimpan di {model_filename}.")
+            print(f"\nTraining Selesai! Calon otak AI Momentum disimpan di {model_filename}.")
         else:
             print(f"Gagal mendapatkan data untuk {symbol}.")
 
